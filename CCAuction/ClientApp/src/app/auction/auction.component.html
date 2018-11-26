@@ -1,0 +1,85 @@
+<h1>EdApp - Coding Challenge - Auction Website</h1>
+
+<h2>Select a test member to bid</h2>
+<div class="btn-group btn-group-lg" role="group" *ngFor="let user of users">
+  <button type="button" class="btn btn-default" (click)="selectUser(user)">{{user.fullName}}</button>
+</div>
+
+<div *ngIf="selectedUser">
+  <h2>{{selectedUser.fullName}} - Shop by Category</h2>
+  <div class="btn-group btn-group-lg" role="group" *ngFor="let category of categories">
+    <button type="button" class="btn btn-default" (click)="selectCategory(category)">{{category.name}}</button>
+  </div>
+
+  <div *ngIf="selectedCategory">
+    <h2>{{selectedCategory.name}} Category - Shop by Item</h2>
+    <div class="btn-group btn-group-lg" role="group" *ngFor="let item of items">
+      <button type="button" class="btn btn-default" (click)="selectItem(item)">{{item.name}}</button>
+    </div>
+
+    <div *ngIf="items?.length; else promptEmpty">
+      <div *ngIf="selectedItem">
+        <div *ngIf="isBidExpired(selectedItem)" class="alert alert-danger some-gap" role="alert">{{bidMessage}}</div>
+        <h3>Bid your {{selectedItem.name}}</h3>
+        <div><label>ID: {{selectedItem.id}}</label></div>
+        <div><label>Name: {{selectedItem.name}}</label></div>
+        <div><label>Description: {{selectedItem.description}}</label></div>
+        <div><label>Condition: {{selectedItem.conditionName}}</label></div>
+        <div><label>Seller: {{selectedItem.sellerFullName}}</label></div>
+        <div><label>Start Price: {{selectedItem.currencySymbol}} {{selectedItem.startPrice | number: '1.2'}}</label></div>
+        <div><label>Current Highest Bid Price: {{selectedItem.currencySymbol}} {{selectedItem.highestBidPrice | number: '1.2'}}</label></div>
+        <div>
+          <label>Bid End Date: {{selectedItem.bidEndDate | date:'medium'}}</label>
+          <button type="button" class="btn btn-default" (click)="expireBidNow(selectedItem)" *ngIf="!isBidExpired(selectedItem)">Expire bid now for testing</button>
+        </div>
+        <div><label>Remaining Duration: {{selectedItem.durationInDay}} Days</label></div>
+        <div><label>Bid Count: {{selectedItem.bidCount}}</label></div>
+        <div>
+          <label>
+            Place Your Bid Price: {{selectedItem.currencySymbol}}
+            <input [(ngModel)]="selectedItem.bidPrice" placeholder="Bid Price" type="number" step="0.01" min="0" max="9999" class="input-lg" />
+          </label>
+        </div>
+        <button type="button" class="btn btn-default btn-lg" (click)="previousItem(selectedItem)"><<</button>
+        <button type="button" class="btn btn-default btn-lg" (click)="nextItem(selectedItem)">>></button>
+        <button type="button" class="btn btn-default btn-lg" (click)="bidItem(selectedItem)" *ngIf="!isBidExpired(selectedItem)">Bid {{selectedItem.name}} <span *ngIf="selectedItem.bidPrice">for {{selectedItem.currencySymbol}} {{selectedItem.bidPrice.toFixed(2)}}</span></button>
+        <button type="button" class="btn btn-default btn-lg hidden" (click)="openModal(templateBid)" id="templateBidButton"></button>
+        <button type="button" class="btn btn-default btn-lg hidden" (click)="openModal(templateBidError)" id="templateBidErrorButton"></button>
+      </div>
+    </div>
+
+    <ng-template #promptEmpty>
+      <h3>Sorry...there are no items found in {{selectedCategory?.name}} Category.</h3>
+    </ng-template>
+  </div>
+</div>
+
+<ng-template #templateBid>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Your bid is submitted</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Thank you for bidding {{selectedItem.name}} at price of {{selectedItem.currencySymbol}} {{selectedItem.bidPrice.toFixed(2)}}.
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" aria-label="Close" (click)="modalRef.hide()">Close</button>
+  </div>
+</ng-template>
+
+<ng-template #templateBidError>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Bid error</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    {{err}}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default btn-lg" aria-label="Close" (click)="modalRef.hide()">Close</button>
+  </div>
+</ng-template>
