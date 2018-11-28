@@ -10,8 +10,8 @@ pool:
    buildConfiguration: 'Release'
 
  steps:
- - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+ - script: dotnet build .\CCAuction\CCAuction.csproj --configuration $(buildConfiguration)
+  displayName: 'dotnet build .\CCAuction\CCAuction.csproj $(buildConfiguration)'
 
 
 - script: dotnet publish --output $(Build.ArtifactStagingDirectory)
