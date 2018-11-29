@@ -4,14 +4,30 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: 'Ubuntu 16.04'
 
-variables:
-  buildConfiguration: 'Release'
+# variables:
+#   buildConfiguration: 'Release'
 
+# steps:
+# - script: dotnet build --configuration $(buildConfiguration)
+#   displayName: 'dotnet build $(buildConfiguration)'
+
+
+# - script: dotnet publish --output $(Build.ArtifactStagingDirectory)
+# - task: PublishBuildArtifacts@1
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  - script: |
+      npm install
+    displayName: "npm install"
+  - task: ArchiveFiles@2
+    displayName: "Archive files"
+    inputs:
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+      includeRootFolder: false
+      archiveFile: "$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip"
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)'
+      name: 'drop'
 
-- script: dotnet publish --output $(Build.ArtifactStagingDirectory)
-- task: PublishBuildArtifacts@1
