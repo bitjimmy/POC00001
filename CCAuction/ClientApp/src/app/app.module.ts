@@ -11,6 +11,7 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { AuctionComponent } from './auction/auction.component';
+//import { SampleDataService } from './services/api.client.generated';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,7 @@ import { AuctionComponent } from './auction/auction.component';
       { path: 'auction', component: AuctionComponent },
     ])
   ],
-  providers: [],
+  providers: [],//[SampleDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

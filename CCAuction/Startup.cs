@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NSwag;
+using NSwag.AspNetCore;
 
 namespace CCAuction
 {
@@ -33,6 +35,8 @@ namespace CCAuction
             }));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSwagger();
 
             // register in DI container 
             services.AddScoped<ITestDataService, TestDataService>();
@@ -62,6 +66,8 @@ namespace CCAuction
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseSwaggerUi3(typeof(Startup).Assembly, new SwaggerUi3Settings());
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -69,17 +75,30 @@ namespace CCAuction
                     template: "{controller}/{action=Index}/{id?}");
             });
 
-            app.UseSpa(spa =>
+            //app.MapWhen(r => !r.Request.Path.Value.StartsWith("/swagger"), builder =>
+            //{
+            //    builder.UseMvc(routes =>
+            //    {
+            //        routes.MapSpaFallbackRoute(
+            //            name: "spa-fallback",
+            //            defaults: new { Controller = "Home", action = "Index" });
+            //    });
+            //});
+
+            app.MapWhen(r => !r.Request.Path.Value.StartsWith("/swagger"), builder =>
             {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
-
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
+                builder.UseSpa(spa =>
                 {
-                    spa.UseAngularCliServer(npmScript: "start");
-                }
+                    // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                    // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                    spa.Options.SourcePath = "ClientApp";
+
+                    if (env.IsDevelopment())
+                    {
+                        spa.UseAngularCliServer(npmScript: "start");
+                    }
+                });
             });
         }
     }
